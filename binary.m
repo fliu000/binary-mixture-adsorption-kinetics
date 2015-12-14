@@ -7,7 +7,7 @@ function binary_2(c1, c2, maxLoop)
     x_m = 4.12 * 1e-10;  # saturation adsorption
     a1  = 2.9 * 1e-8;  # a1 is Langmuir von Szyskowski constant
     a2  = 2.97 * 1e-7;  # a2 is Langmuir von Szyskowski constant
-    t   = 0.001;
+    t   = 1;
     x   = (1 : maxLoop);
     y   = (1 : maxLoop);
     
@@ -52,12 +52,8 @@ function binary_2(c1, c2, maxLoop)
             c2_s(n) = a2 * y_1(n) / (x_m - x_1(n) - y_1(n));
             
             # Step 3: make the second estimate
-            # TODO: extract this definite integral logic and fix its scale.
-            p1(n) = 1/2 * c1_s(n) * t + (sum (c1_s(n)) - c1_s(1) - c1_s(n)) * t + 1/2 * c1_s(1) * t; 
-            x_2(n) = 2 * sqrt(D / pi) * (c1 * sqrt(tn) - p1(n));
-            
-            p2(n) = 1/2 * c2_s(n) * t + (sum (c2_s(n)) - c2_s(1) - c2_s(n)) * t + 1/2 * c2_s(1) * t; 
-            y_2(n) = 2 * sqrt(D / pi) * (c2 * sqrt(tn) - p2(n));
+            x_2(n) = 2 * sqrt(D / pi) * (c1 * sqrt(tn) - def_integral(c1_s, 1, floor(sqrt(tn)/t), t, n));
+            y_2(n) = 2 * sqrt(D / pi) * (c2 * sqrt(tn) - def_integral(c2_s, 1, floor(sqrt(tn)/t), t, n));
             
             # Step 4: check whether second estimates are within 1%
             # of first estimate
@@ -82,3 +78,18 @@ function binary_2(c1, c2, maxLoop)
     plot(time_axis, x);
     hold on
     plot(time_axis, y);
+    hold on
+    plot(time_axis, x+y, 'b-o');
+end
+
+function result = def_integral(val_array, startIndex, endIndex, delta, iter)
+    # This computes the below
+    # sum from i = startIndex to endIndex
+    # val_array(iter - i) * delta / (2 * sqrt(delta * i))
+    # which corresponses to the desired definite integral
+    integral_result = 0;
+    for i = startIndex : endIndex
+        integral_result += val_array(iter - i) * delta / (2 * sqrt(delta * i));
+    end
+    result = integral_result;
+end
