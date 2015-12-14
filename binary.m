@@ -20,7 +20,7 @@ function binary_2(c1, c2, maxLoop)
     y_3 = (1 : maxLoop);
     time_axis = (1 : maxLoop);
     
-    maxIteration = 100000;
+    maxIteration = 1000;
     
     x(1) = 0;
     y(1) = 0;
@@ -43,9 +43,6 @@ function binary_2(c1, c2, maxLoop)
         # Step 1: make the first estimate
         x_1(n) =  x(n-1) + (x(n-1) - x(n-2));
         y_1(n) =  y(n-1) + (y(n-1) - y(n-2));
-        
-        #disp(">>start loop");
-        #disp(n);
 
         for iter = 1 : maxIteration
             # Step 2: compute the c_s(n)
@@ -54,26 +51,17 @@ function binary_2(c1, c2, maxLoop)
             
             # Step 3: make the second estimate
             p1(n) = (sum (c1_s(n)) - c1_s(1) - c1_s(n)) * t; 
-            x_2(n) = 2 * sqrt(D / pi) * (c1 * sqrt(tn) - (1/(n-1)^2 * c1_s(n) * t + p1(n) + ((n-1)^2-1)/(n-1)^2 * c1_s(1) * t));
+            x_2(n) = 2 * sqrt(D / pi) * (c1 * sqrt(tn) - (1/2 * c1_s(n) * t + p1(n) + 1/2 * c1_s(1) * t));
             
             p2(n) = (sum (c2_s(n)) - c2_s(1) - c2_s(n)) * t; 
-            y_2(n) = 2 * sqrt(D / pi) * (c2 * sqrt(tn) - (1/(n-1)^2 * c2_s(n) * t + p2(n) + ((n-1)^2-1)/(n-1)^2 * c2_s(1) * t));
+            y_2(n) = 2 * sqrt(D / pi) * (c2 * sqrt(tn) - (1/2 * c2_s(n) * t + p2(n) + 1/2 * c2_s(1) * t));
             
             # Step 4: check whether second estimates are within 1%
             # of first estimate
-            
-            #disp("iter");
-            #disp(iter);
-            #disp(x_2(n));
-            #disp(x_1(n));
-            #disp(abs(x_2(n)/x_1(n) - 1));
-            
-            if (abs(x_2(n)/x_1(n) - 1) < 0.01 && abs(y_2(n)/y_1(n) - 1) < 0.01 && (x_m - x_2(n)) > 0 && (x_m - y_2(n)) > 0)
+            if (abs(x_2(n)/x_1(n) - 1) < 0.01 && abs(y_2(n)/y_1(n) - 1) < 0.01)
                 # If yes, use second estimate as x(n), y(n)
                 x(n) = x_2(n);
                 y(n) = y_2(n);
-                #disp('found less than threshold');
-                #disp(n);
                 break;
             else 
                 # If no, make the third estimate.
@@ -87,13 +75,6 @@ function binary_2(c1, c2, maxLoop)
         end
     end
     
-    #disp("final");
-    #disp(x);
-    #disp("est 1.");
-    #disp(x_1);
-    #disp("est 2.");
-    #disp(x_2);
-
     clf;
     plot(time_axis, x);
     hold on
