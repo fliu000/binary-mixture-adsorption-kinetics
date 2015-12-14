@@ -50,11 +50,11 @@ function binary_2(c1, c2, maxLoop)
             c2_s(n) = a2 * y_1(n) / (x_m - x_1(n) - y_1(n));
             
             # Step 3: make the second estimate
-            p1(n) = (sum (c1_s(n)) - c1_s(1) - c1_s(n)) * t; 
-            x_2(n) = 2 * sqrt(D / pi) * (c1 * sqrt(tn) - (1/2 * c1_s(n) * t + p1(n) + 1/2 * c1_s(1) * t));
+            p1(n) = 1/2 * c1_s(n) * t + (sum (c1_s(n)) - c1_s(1) - c1_s(n)) * t + 1/2 * c1_s(1) * t; 
+            x_2(n) = 2 * sqrt(D / pi) * (c1 * sqrt(tn) - p1(n);
             
-            p2(n) = (sum (c2_s(n)) - c2_s(1) - c2_s(n)) * t; 
-            y_2(n) = 2 * sqrt(D / pi) * (c2 * sqrt(tn) - (1/2 * c2_s(n) * t + p2(n) + 1/2 * c2_s(1) * t));
+            p2(n) = (1/2 * c2_s(n) * t + (sum (c2_s(n)) - c2_s(1) - c2_s(n)) * t + 1/2 * c2_s(1) * t; 
+            y_2(n) = 2 * sqrt(D / pi) * (c2 * sqrt(tn) - p2(n));
             
             # Step 4: check whether second estimates are within 1%
             # of first estimate
