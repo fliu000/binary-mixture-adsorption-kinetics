@@ -1,6 +1,6 @@
 # binary-mixture-adsorption-kinetics
 # author: fliu000
-# original version
+# updated version
 
 function binary_2(c1, c2, maxLoop)
     D   = 2.8 * 1e-6;
@@ -18,6 +18,8 @@ function binary_2(c1, c2, maxLoop)
     y_2 = (1 : maxLoop);
     x_3 = (1 : maxLoop);
     y_3 = (1 : maxLoop);
+    c1_s = (1 : maxLoop);
+    c2_s = (1 : maxLoop);
     time_axis = (1 : maxLoop);
     
     maxIteration = 1000;
@@ -28,16 +30,16 @@ function binary_2(c1, c2, maxLoop)
     c1_s(1) = a1 * x(1) / (x_m - x(1) - y(1));
     c2_s(1) = a2 * y(1) / (x_m - x(1) - y(1));
     
-    x(2) = 2 * c1 * sqrt(D * t^2 / pi);
-    y(2) = 2 * c2 * sqrt(D * t^2 / pi);
+    x(2) = 2 * c1 * sqrt(D * t / pi);
+    y(2) = 2 * c2 * sqrt(D * t / pi);
     
     c1_s(2) = a1 * x(2) / (x_m - x(2) - y(2));
     c2_s(2) = a2 * y(2) / (x_m - x(2) - y(2));
     
     time_axis(1) = 0;
-    time_axis(2) = t^2;
+    time_axis(2) = t;
     for n = 3 : maxLoop
-        tn = (t * (n-1))^2;
+        tn = (t * (n-1));
         time_axis(n) = tn;
         
         # Step 1: make the first estimate
@@ -50,10 +52,11 @@ function binary_2(c1, c2, maxLoop)
             c2_s(n) = a2 * y_1(n) / (x_m - x_1(n) - y_1(n));
             
             # Step 3: make the second estimate
+            # TODO: extract this definite integral logic and fix its scale.
             p1(n) = 1/2 * c1_s(n) * t + (sum (c1_s(n)) - c1_s(1) - c1_s(n)) * t + 1/2 * c1_s(1) * t; 
-            x_2(n) = 2 * sqrt(D / pi) * (c1 * sqrt(tn) - p1(n);
+            x_2(n) = 2 * sqrt(D / pi) * (c1 * sqrt(tn) - p1(n));
             
-            p2(n) = (1/2 * c2_s(n) * t + (sum (c2_s(n)) - c2_s(1) - c2_s(n)) * t + 1/2 * c2_s(1) * t; 
+            p2(n) = 1/2 * c2_s(n) * t + (sum (c2_s(n)) - c2_s(1) - c2_s(n)) * t + 1/2 * c2_s(1) * t; 
             y_2(n) = 2 * sqrt(D / pi) * (c2 * sqrt(tn) - p2(n));
             
             # Step 4: check whether second estimates are within 1%
